@@ -50,280 +50,282 @@ const Watchlist = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Watchlist</h1>
-            <p className="text-muted-foreground">Monitor your favorite stocks and track their performance</p>
-          </div>
-          <div className="flex items-center space-x-4">
-            {lastRefresh && (
-              <div className="flex items-center space-x-2">
-                <Badge variant="outline">
-                  Last updated: {lastRefresh}
-                </Badge>
-                {data?.stocks && data.stocks.length > 0 && (
-                  <Badge variant="default">
-                    Live Watchlist
+      <>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">Watchlist</h1>
+              <p className="text-muted-foreground">Monitor your favorite stocks and track their performance</p>
+            </div>
+            <div className="flex items-center space-x-4">
+              {lastRefresh && (
+                <div className="flex items-center space-x-2">
+                  <Badge variant="outline">
+                    Last updated: {lastRefresh}
                   </Badge>
-                )}
+                  {data?.stocks && data.stocks.length > 0 && (
+                    <Badge variant="default">
+                      Live Watchlist
+                    </Badge>
+                  )}
+                </div>
+              )}
+              <div className="flex space-x-2">
+                <Button variant="outline">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Stock
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleManualRefresh}
+                  disabled={loading}
+                >
+                  <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                  {loading ? 'Updating...' : 'Refresh'}
+                </Button>
               </div>
-            )}
-            <div className="flex space-x-2">
-              <Button variant="outline">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Stock
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={handleManualRefresh}
-                disabled={loading}
-              >
-                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                {loading ? 'Updating...' : 'Refresh'}
-              </Button>
             </div>
           </div>
-        </div>
 
-        {error && (
-          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-            <p className="text-destructive text-sm">
-              Error loading watchlist: {error}
-            </p>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={refetch}
-              className="mt-2"
-            >
-              Retry
-            </Button>
+          {error && (
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+              <p className="text-destructive text-sm">
+                Error loading watchlist: {error}
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={refetch}
+                className="mt-2"
+              >
+                Retry
+              </Button>
+            </div>
+          )}
+
+          {/* Watchlist Summary */}
+          <div className="grid gap-6 md:grid-cols-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Stocks</CardTitle>
+                <Eye className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{watchlistSummary.totalStocks}</div>
+                <p className="text-xs text-muted-foreground">In your watchlist</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Gainers</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">{watchlistSummary.gainers}</div>
+                <p className="text-xs text-muted-foreground">Stocks up today</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Losers</CardTitle>
+                <TrendingDown className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-red-600">{watchlistSummary.losers}</div>
+                <p className="text-xs text-muted-foreground">Stocks down today</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Avg Change</CardTitle>
+                <Star className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-bold ${watchlistSummary.avgChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {watchlistSummary.avgChange >= 0 ? '+' : ''}{watchlistSummary.avgChange.toFixed(2)}%
+                </div>
+                <p className="text-xs text-muted-foreground">Average performance</p>
+              </CardContent>
+            </Card>
           </div>
-        )}
 
-        {/* Watchlist Summary */}
-        <div className="grid gap-6 md:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Stocks</CardTitle>
-              <Eye className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{watchlistSummary.totalStocks}</div>
-              <p className="text-xs text-muted-foreground">In your watchlist</p>
-            </CardContent>
-          </Card>
+          <Tabs defaultValue="all" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="all">All Stocks</TabsTrigger>
+              <TabsTrigger value="gainers">Gainers</TabsTrigger>
+              <TabsTrigger value="losers">Losers</TabsTrigger>
+              <TabsTrigger value="movers">Top Movers</TabsTrigger>
+            </TabsList>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Gainers</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{watchlistSummary.gainers}</div>
-              <p className="text-xs text-muted-foreground">Stocks up today</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Losers</CardTitle>
-              <TrendingDown className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">{watchlistSummary.losers}</div>
-              <p className="text-xs text-muted-foreground">Stocks down today</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg Change</CardTitle>
-              <Star className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${watchlistSummary.avgChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {watchlistSummary.avgChange >= 0 ? '+' : ''}{watchlistSummary.avgChange.toFixed(2)}%
-              </div>
-              <p className="text-xs text-muted-foreground">Average performance</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Tabs defaultValue="all" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="all">All Stocks</TabsTrigger>
-            <TabsTrigger value="gainers">Gainers</TabsTrigger>
-            <TabsTrigger value="losers">Losers</TabsTrigger>
-            <TabsTrigger value="movers">Top Movers</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="all" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Your Watchlist</CardTitle>
-                  <div className="flex items-center space-x-2">
-                    <Select defaultValue="name">
-                      <SelectTrigger className="w-32">
-                        <SelectValue placeholder="Sort by" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="name">Name</SelectItem>
-                        <SelectItem value="price">Price</SelectItem>
-                        <SelectItem value="change">Change</SelectItem>
-                        <SelectItem value="volume">Volume</SelectItem>
-                      </SelectContent>
-                    </Select>
+            <TabsContent value="all" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Your Watchlist</CardTitle>
+                    <div className="flex items-center space-x-2">
+                      <Select defaultValue="name">
+                        <SelectTrigger className="w-32">
+                          <SelectValue placeholder="Sort by" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="name">Name</SelectItem>
+                          <SelectItem value="price">Price</SelectItem>
+                          <SelectItem value="change">Change</SelectItem>
+                          <SelectItem value="volume">Volume</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {watchlistStocks.map((stock) => (
-                    <div key={stock.symbol} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                          <span className="font-semibold text-primary">{stock.symbol.slice(0, 2)}</span>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {watchlistStocks.map((stock) => (
+                      <div key={stock.symbol} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                            <span className="font-semibold text-primary">{stock.symbol.slice(0, 2)}</span>
+                          </div>
+                          <div>
+                            <h3 className="font-semibold">{stock.symbol}</h3>
+                            <p className="text-sm text-muted-foreground">{stock.name}</p>
+                            <p className="text-xs text-muted-foreground">Added: {stock.addedDate}</p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-semibold">{stock.symbol}</h3>
-                          <p className="text-sm text-muted-foreground">{stock.name}</p>
-                          <p className="text-xs text-muted-foreground">Added: {stock.addedDate}</p>
+                        <div className="text-center">
+                          <div className="font-semibold">${stock.price}</div>
+                          <div className={`text-sm ${stock.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {stock.change >= 0 ? '+' : ''}${stock.change} ({stock.changePercent >= 0 ? '+' : ''}{stock.changePercent}%)
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-sm text-muted-foreground">Volume</div>
+                          <div className="font-medium">{stock.volume}</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-sm text-muted-foreground">Market Cap</div>
+                          <div className="font-medium">{stock.marketCap}</div>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button variant="outline" size="sm">
+                            View
+                          </Button>
+                          <Button variant="outline" size="sm">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </div>
                       </div>
-                      <div className="text-center">
-                        <div className="font-semibold">${stock.price}</div>
-                        <div className={`text-sm ${stock.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {stock.change >= 0 ? '+' : ''}${stock.change} ({stock.changePercent >= 0 ? '+' : ''}{stock.changePercent}%)
-                        </div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-sm text-muted-foreground">Volume</div>
-                        <div className="font-medium">{stock.volume}</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-sm text-muted-foreground">Market Cap</div>
-                        <div className="font-medium">{stock.marketCap}</div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button variant="outline" size="sm">
-                          View
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-          <TabsContent value="gainers" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Today's Gainers</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {watchlistStocks
-                    .filter(stock => stock.change > 0)
-                    .sort((a, b) => b.changePercent - a.changePercent)
-                    .map((stock) => (
-                    <div key={stock.symbol} className="flex items-center justify-between p-4 border rounded-lg bg-green-50">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                          <TrendingUp className="h-5 w-5 text-green-600" />
+            <TabsContent value="gainers" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Today's Gainers</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {watchlistStocks
+                      .filter(stock => stock.change > 0)
+                      .sort((a, b) => b.changePercent - a.changePercent)
+                      .map((stock) => (
+                      <div key={stock.symbol} className="flex items-center justify-between p-4 border rounded-lg bg-green-50">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                            <TrendingUp className="h-5 w-5 text-green-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold">{stock.symbol}</h3>
+                            <p className="text-sm text-muted-foreground">{stock.name}</p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-semibold">{stock.symbol}</h3>
-                          <p className="text-sm text-muted-foreground">{stock.name}</p>
+                        <div className="text-right">
+                          <div className="font-semibold">${stock.price}</div>
+                          <div className="text-sm text-green-600">
+                            +${stock.change} (+{stock.changePercent}%)
+                          </div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="font-semibold">${stock.price}</div>
-                        <div className="text-sm text-green-600">
-                          +${stock.change} (+{stock.changePercent}%)
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-          <TabsContent value="losers" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Today's Losers</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {watchlistStocks
-                    .filter(stock => stock.change < 0)
-                    .sort((a, b) => a.changePercent - b.changePercent)
-                    .map((stock) => (
-                    <div key={stock.symbol} className="flex items-center justify-between p-4 border rounded-lg bg-red-50">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                          <TrendingDown className="h-5 w-5 text-red-600" />
+            <TabsContent value="losers" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Today's Losers</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {watchlistStocks
+                      .filter(stock => stock.change < 0)
+                      .sort((a, b) => a.changePercent - b.changePercent)
+                      .map((stock) => (
+                      <div key={stock.symbol} className="flex items-center justify-between p-4 border rounded-lg bg-red-50">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                            <TrendingDown className="h-5 w-5 text-red-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold">{stock.symbol}</h3>
+                            <p className="text-sm text-muted-foreground">{stock.name}</p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-semibold">{stock.symbol}</h3>
-                          <p className="text-sm text-muted-foreground">{stock.name}</p>
+                        <div className="text-right">
+                          <div className="font-semibold">${stock.price}</div>
+                          <div className="text-sm text-red-600">
+                            ${stock.change} ({stock.changePercent}%)
+                          </div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="font-semibold">${stock.price}</div>
-                        <div className="text-sm text-red-600">
-                          ${stock.change} ({stock.changePercent}%)
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-          <TabsContent value="movers" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Top Movers</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {topMovers.map((stock, index) => (
-                    <div key={stock.symbol} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold text-primary">
-                          {index + 1}
+            <TabsContent value="movers" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Top Movers</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {topMovers.map((stock, index) => (
+                      <div key={stock.symbol} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold text-primary">
+                            {index + 1}
+                          </div>
+                          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                            <span className="font-semibold text-primary">{stock.symbol.slice(0, 2)}</span>
+                          </div>
+                          <div>
+                            <h3 className="font-semibold">{stock.symbol}</h3>
+                            <p className="text-sm text-muted-foreground">{stock.name}</p>
+                          </div>
                         </div>
-                        <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                          <span className="font-semibold text-primary">{stock.symbol.slice(0, 2)}</span>
-                        </div>
-                        <div>
-                          <h3 className="font-semibold">{stock.symbol}</h3>
-                          <p className="text-sm text-muted-foreground">{stock.name}</p>
+                        <div className="text-right">
+                          <div className="font-semibold">${stock.price}</div>
+                          <div className={`text-sm font-medium ${stock.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {stock.change >= 0 ? '+' : ''}${stock.change} ({stock.changePercent >= 0 ? '+' : ''}{stock.changePercent}%)
+                          </div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="font-semibold">${stock.price}</div>
-                        <div className={`text-sm font-medium ${stock.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {stock.change >= 0 ? '+' : ''}${stock.change} ({stock.changePercent >= 0 ? '+' : ''}{stock.changePercent}%)
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
 
         {loading && (
           <div className="fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg">
@@ -333,7 +335,7 @@ const Watchlist = () => {
             </div>
           </div>
         )}
-      </div>
+      </>
     </DashboardLayout>
   );
 };
