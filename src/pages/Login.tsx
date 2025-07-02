@@ -89,17 +89,17 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+      <Card className="w-full max-w-md shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
         <CardHeader className="space-y-1 text-center">
           <div className="flex items-center justify-center mb-4">
             <DollarSign className="h-8 w-8 text-primary mr-2" />
-            <span className="font-bold text-2xl bg-gradient-primary bg-clip-text text-transparent">
+            <span className="font-bold text-2xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               StockIQ
             </span>
           </div>
-          <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">Welcome back</CardTitle>
+          <CardDescription className="text-gray-600 dark:text-gray-300">
             Sign in to your account to access your portfolio
           </CardDescription>
         </CardHeader>
@@ -112,7 +112,7 @@ const Login = () => {
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -121,11 +121,12 @@ const Login = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
+                className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-gray-700 dark:text-gray-300">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -135,6 +136,7 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={loading}
+                  className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                 />
                 <Button
                   type="button"
@@ -157,7 +159,7 @@ const Login = () => {
               <Button
                 type="button"
                 variant="link"
-                className="px-0 font-normal"
+                className="px-0 font-normal text-blue-600 dark:text-blue-400"
                 onClick={handleForgotPassword}
                 disabled={loading}
               >
@@ -179,10 +181,10 @@ const Login = () => {
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+              <span className="w-full border-t border-gray-300 dark:border-gray-600" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
+              <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-gray-400">
                 Or continue with
               </span>
             </div>
@@ -190,7 +192,7 @@ const Login = () => {
 
           <Button
             variant="outline"
-            className="w-full"
+            className="w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
             onClick={handleGoogleLogin}
             disabled={loading}
           >
@@ -216,10 +218,10 @@ const Login = () => {
           </Button>
 
           <div className="text-center text-sm">
-            <span className="text-muted-foreground">Don't have an account? </span>
+            <span className="text-gray-600 dark:text-gray-400">Don't have an account? </span>
             <Link
               to="/register"
-              className="font-medium text-primary hover:underline"
+              className="font-medium text-blue-600 dark:text-blue-400 hover:underline"
             >
               Sign up
             </Link>
