@@ -4,6 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { AppSettingsProvider } from "@/contexts/AppSettingsContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
@@ -21,64 +24,70 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            
-            {/* Protected routes */}
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            } />
-            <Route path="/portfolio" element={
-              <ProtectedRoute>
-                <Portfolio />
-              </ProtectedRoute>
-            } />
-            <Route path="/predictions" element={
-              <ProtectedRoute>
-                <Predictions />
-              </ProtectedRoute>
-            } />
-            <Route path="/analytics" element={
-              <ProtectedRoute>
-                <Analytics />
-              </ProtectedRoute>
-            } />
-            <Route path="/alerts" element={
-              <ProtectedRoute>
-                <Alerts />
-              </ProtectedRoute>
-            } />
-            <Route path="/search" element={
-              <ProtectedRoute>
-                <Search />
-              </ProtectedRoute>
-            } />
-            <Route path="/watchlist" element={
-              <ProtectedRoute>
-                <Watchlist />
-              </ProtectedRoute>
-            } />
-            <Route path="/settings" element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            } />
-            
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppSettingsProvider>
+          <NotificationProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  {/* Public routes */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  
+                  {/* Protected routes */}
+                  <Route path="/" element={
+                    <ProtectedRoute>
+                      <Index />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/portfolio" element={
+                    <ProtectedRoute>
+                      <Portfolio />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/predictions" element={
+                    <ProtectedRoute>
+                      <Predictions />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/analytics" element={
+                    <ProtectedRoute>
+                      <Analytics />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/alerts" element={
+                    <ProtectedRoute>
+                      <Alerts />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/search" element={
+                    <ProtectedRoute>
+                      <Search />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/watchlist" element={
+                    <ProtectedRoute>
+                      <Watchlist />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/settings" element={
+                    <ProtectedRoute>
+                      <Settings />
+                    </ProtectedRoute>
+                  } />
+                  
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </NotificationProvider>
+        </AppSettingsProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
