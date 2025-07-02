@@ -1,73 +1,153 @@
-# Welcome to your Lovable project
+# StockIQ Dashboard - N8N Integration
 
-## Project info
+A professional stock trading dashboard with real-time data integration using N8N automation and Supabase.
 
-**URL**: https://lovable.dev/projects/414ba78e-6f34-4003-85bd-8391b7bd8e94
+## Features
 
-## How can I edit this code?
+- **Real-time Stock Data**: Live stock prices and market data via N8N webhooks
+- **AI Predictions**: Machine learning-powered stock predictions
+- **Portfolio Management**: Track and manage your investment portfolio
+- **Advanced Analytics**: Comprehensive portfolio analytics and risk assessment
+- **Smart Alerts**: Customizable price and volume alerts
+- **Watchlists**: Organize and monitor your favorite stocks
 
-There are several ways of editing your application.
+## N8N Integration Setup
 
-**Use Lovable**
+### 1. Supabase Configuration
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/414ba78e-6f34-4003-85bd-8391b7bd8e94) and start prompting.
+The project includes a Supabase edge function that handles N8N webhook triggers:
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Function**: `dashboard-trigger`
+- **Trigger**: `dashboardtrigger`
+- **Database Tables**: `stocks`, `predictions`, `trigger_logs`
 
-**Use your preferred IDE**
+### 2. Environment Variables
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Set the following secret in your Supabase project:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+N8N_WEBHOOK_URL=https://your-n8n-instance.com/webhook/dashboardtrigger
 ```
 
-**Edit a file directly in GitHub**
+### 3. N8N Workflow Setup
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Create an N8N workflow with:
 
-**Use GitHub Codespaces**
+1. **Webhook Trigger**: Listen for `dashboardtrigger` events
+2. **Stock Data API**: Fetch real-time stock data (Alpha Vantage, Yahoo Finance, etc.)
+3. **AI Prediction Service**: Generate stock predictions
+4. **Response**: Return formatted data to Supabase
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+#### Sample N8N Workflow Structure:
 
-## What technologies are used for this project?
+```
+Webhook Trigger → Stock API → AI Predictions → Format Response
+```
 
-This project is built with:
+#### Expected Response Format:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```json
+{
+  "stocks": [
+    {
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "price": 189.95,
+      "change": 5.24,
+      "changePercent": 2.84,
+      "volume": "45.2M",
+      "marketCap": "2.98T",
+      "sector": "Technology",
+      "prediction": {
+        "direction": "BUY",
+        "confidence": 85,
+        "targetPrice": 195.50,
+        "timeframe": "1 week"
+      }
+    }
+  ]
+}
+```
 
-## How can I deploy this project?
+### 4. Dashboard Integration
 
-Simply open [Lovable](https://lovable.dev/projects/414ba78e-6f34-4003-85bd-8391b7bd8e94) and click on Share -> Publish.
+The dashboard automatically triggers the N8N workflow when:
 
-## Can I connect a custom domain to my Lovable project?
+- User loads the dashboard page
+- Manual refresh is clicked
+- Real-time updates are requested
 
-Yes, you can!
+### 5. Database Schema
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```sql
+-- Stocks table
+CREATE TABLE stocks (
+  symbol text PRIMARY KEY,
+  name text NOT NULL,
+  price decimal(10,2),
+  change decimal(10,2),
+  change_percent decimal(5,2),
+  volume text,
+  market_cap text,
+  sector text,
+  updated_at timestamptz DEFAULT now()
+);
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+-- Predictions table
+CREATE TABLE predictions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  symbol text REFERENCES stocks(symbol),
+  direction text CHECK (direction IN ('BUY', 'SELL', 'HOLD')),
+  confidence integer CHECK (confidence >= 0 AND confidence <= 100),
+  target_price decimal(10,2),
+  timeframe text,
+  created_at timestamptz DEFAULT now()
+);
+```
+
+## Usage
+
+1. **Automatic Triggers**: The dashboard automatically fetches live data when loaded
+2. **Manual Refresh**: Click the refresh button to trigger immediate updates
+3. **Real-time Updates**: Data updates automatically via Supabase real-time subscriptions
+4. **Error Handling**: Graceful fallback to mock data if N8N is unavailable
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Deploy Supabase functions
+supabase functions deploy dashboard-trigger
+```
+
+## Technologies Used
+
+- **Frontend**: React, TypeScript, Tailwind CSS, shadcn/ui
+- **Backend**: Supabase (Database, Edge Functions, Real-time)
+- **Automation**: N8N (Webhooks, Data Processing)
+- **Charts**: Recharts
+- **State Management**: React Hooks, TanStack Query
+
+## Security
+
+- Row Level Security (RLS) enabled on all tables
+- Service role authentication for N8N integration
+- CORS headers configured for secure API access
+- Environment variables for sensitive configuration
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test the N8N integration
+5. Submit a pull request
+
+## License
+
+MIT License - see LICENSE file for details
